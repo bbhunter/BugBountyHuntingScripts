@@ -454,9 +454,15 @@ addPrograms()
                     domains=$(bbrf domains -p "$program")
                     echo "$domains"|nuclei -vv -t $templates/dns -stats -ts -bs 30 -rl 200 -si 180|notify -silent
                      #DNS takeover
-                     echo "$domains"|~/software/dnsx/dnsx -rc servfail -j -trace -r ~/resolvers.txt| \
-                          jq -r '("\u001b[31m \(.host)\u001b[0m\n" + (.trace.chain | map(select(.ns != null and (.ns[] | contains("dnsmadeeasy") or contains("digicertdns")))) | .[-1].ns[] | select(test("dnsmadeeasy|digicertdns"))))' \
-                          | grep host|sed 's/^/DNSMADEEASY /'|sort -u|notify -silent 
+                     echo "$domains"|dnsx -rc servfail -j -trace -r ~/resolvers.txt| \
+                          jq -r '.host as $host |
+                                 .trace.chain
+                                 | map(select(.ns != null and (.ns[] | contains("azure-dns") or contains("dnsmadeeasy") or contains("digicertdns") )))
+                                 | .[-1].ns
+                                 | map(select(test("dnsmadeeasy|digicertdns|azure-dns")))
+                                 | .[0] as $first_dns
+                                 | "\($host): \($first_dns)" '
+                           |sort -u|notify -silent
                      #urls
                      bbrf urls -p "$program"|nuclei -vv -t $templates -etags dns -stats -bs 30 -rl 200 -si 180 |sort -u|notify -silent
                 fi
