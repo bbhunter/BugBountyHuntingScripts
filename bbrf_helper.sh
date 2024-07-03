@@ -287,7 +287,7 @@ getUrls()
             echo "$doms"|httprobe -c $threads --prefer-https|bbrf url add - -s httprobe --show-new
         else
                 #only using HEAD method, since in this step we just care about resolving URLS
-            echo "$doms"|httpx -x HEAD -silent -threads $threads -r $resolvers -p|bbrf url add - -s httpx --show-new -p "$program"
+            echo "$doms"|httpx -x HEAD -silent -threads $threads -r $resolvers -p 80,8080,8000,8888,8008,8081,8443,8880,8009,8002|bbrf url add - -s httpx --show-new -p "$program"
             echo -en "${RED} Using httprobe in $numDomains domains (threads: $threads)${ENDCOLOR}\n"
             echo "$doms"|httprobe -c $threads --prefer-https|bbrf url add - -s httprobe --show-new -p "$program"
         fi
