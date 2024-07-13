@@ -17,12 +17,12 @@ H1_getScopefromCsv()
         program=$(echo $input | sed 's/.*teams\/\([^\/]*\)\/assets.*/\1/')
         #echo "program $program"
         #wget -q "$input" -O "$program-scope.csv"
-        curl -s $input | awk -F',' '$5 == "true" {print}' |grep 'URL\|WILDCARD'|getField 1 ","|sed 's/https:\/\///g; s/http:\/\///g'|flatten
+        curl -s $input | awk -F',' '$5 == "true" {print}' |grep 'URL\|WILDCARD'|getField 1 ","|sed 's/https:\/\///g; s/http:\/\///g'|tr -d '/'|flatten
     else
         #checking if file exists 
         if [[ -f "$input" ]]; then
             #echo "$input exists."
-            awk -F',' '$4 == "true" {print}' "$input"|grep 'URL\|WILDCARD'|getField 1 ","|sed 's/https:\/\///g; s/http:\/\///g'|flatten
+            awk -F',' '$4 == "true" {print}' "$input"|grep 'URL\|WILDCARD'|getField 1 ","|sed 's/https:\/\///g; s/http:\/\///g'|tr -d '/'| flatten
         else
             echo "$input not found!"
         fi
